@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_navigator2_sample/core/state_holder.dart';
 import 'package:flutter_navigator2_sample/repository/movie_repository.dart';
 import 'package:flutter_navigator2_sample/screen/home_screen.dart';
-import 'package:flutter_navigator2_sample/screen/movie_detail_screen.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_bloc.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_state.dart';
 
@@ -31,27 +30,6 @@ class HomePage extends Page {
           movies: movies,
           onMovieItemTap: onMovieItemTap,
         ),
-      ),
-    );
-  }
-}
-
-class MovieDetailPage extends Page {
-  final Function() fetchPrerequisitesCallback;
-  final Map<String, dynamic> movie;
-
-  MovieDetailPage({
-    @required this.fetchPrerequisitesCallback,
-    @required this.movie,
-  }) : super(key: ValueKey('MovieDetailPage'));
-
-  @override
-  Route createRoute(BuildContext context) {
-    return MaterialPageRoute(
-      settings: this,
-      builder: (BuildContext context) => MovieDetailScreen(
-        movie: movie,
-        fetchPrerequisitesCallback: fetchPrerequisitesCallback,
       ),
     );
   }

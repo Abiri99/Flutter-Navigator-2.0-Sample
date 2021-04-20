@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_navigator2_sample/navigation/custom_route_configuration.dart';
-import 'package:flutter_navigator2_sample/pages.dart';
+import 'package:flutter_navigator2_sample/page/home_page.dart';
+import 'package:flutter_navigator2_sample/page/movie_detail_page.dart';
 import 'package:flutter_navigator2_sample/repository/movie_repository.dart';
 
 class CustomRouterDelegate extends RouterDelegate<CustomRouteConfiguration>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<CustomRouteConfiguration> {
+    with
+        ChangeNotifier,
+        PopNavigatorRouterDelegateMixin<CustomRouteConfiguration> {
   final MovieRepository movieRepository;
 
   final GlobalKey<NavigatorState> _navigatorKey;
@@ -76,10 +79,11 @@ class CustomRouterDelegate extends RouterDelegate<CustomRouteConfiguration>
   }
 
   @override
-  Future<void> setNewRoutePath(CustomRouteConfiguration configuration) {
-    // if (configuration.imdbId != null) {
+  Future<void> setNewRoutePath(CustomRouteConfiguration configuration) async {
+    movies = await movieRepository.fetchMovies();
+    Future.delayed(Duration(milliseconds: 100), () {
       imdbId = configuration.imdbId;
-    // }
+    },);
     return null;
   }
 }
