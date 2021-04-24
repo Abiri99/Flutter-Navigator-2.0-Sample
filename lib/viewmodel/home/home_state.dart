@@ -1,18 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter_navigator2_sample/core/model/todo.dart';
 import 'package:flutter_navigator2_sample/core/state_holder.dart';
 
 class HomeState extends Equatable {
 
-  final StateHolder<List<Map<String, dynamic>>> movies;
+  final StateHolder<List<Todo>> todos;
 
-  HomeState({this.movies});
+  HomeState({this.todos});
 
-  HomeState copyWith({StateHolder<List<Map<String, dynamic>>> movies}) {
+  HomeState copyWith({StateHolder<List<Todo>> todos}) {
     return HomeState(
-      movies: movies ?? this.movies,
+      todos: todos ?? this.todos,
     );
   }
 
   @override
-  List<Object> get props => [movies];
+  List<Object> get props => [todos];
 }

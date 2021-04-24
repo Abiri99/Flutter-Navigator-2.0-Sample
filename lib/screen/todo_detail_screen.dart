@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_navigator2_sample/core/model/todo.dart';
 
-class MovieDetailScreen extends StatelessWidget {
+class TodoDetailScreen extends StatelessWidget {
   final Function() fetchPrerequisitesCallback;
-  final Map<String, dynamic> movie;
+  final Todo todo;
 
-  MovieDetailScreen({
+  TodoDetailScreen({
     @required this.fetchPrerequisitesCallback,
-    @required this.movie,
-  }) : assert(movie != null);
+    @required this.todo,
+  }) : assert(todo != null);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class MovieDetailScreen extends StatelessWidget {
       body: Container(
         child: Center(
           child: Text(
-            movie['imdbID'],
+            todo.title,
             style: TextStyle(
               color: Colors.black,
             ),

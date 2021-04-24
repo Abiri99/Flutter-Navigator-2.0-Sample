@@ -1,6 +1,6 @@
 class CustomRouteConfiguration {
 
-  final String imdbId;
+  final int todoId;
 
-  CustomRouteConfiguration({this.imdbId});
+  CustomRouteConfiguration({this.todoId});
 }

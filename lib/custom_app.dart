@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_navigator2_sample/core/helper/todo_database_helper.dart';
+import 'package:flutter_navigator2_sample/di/service_locator.dart';
 import 'package:flutter_navigator2_sample/navigation/custom_router_delegate.dart';
 import 'package:flutter_navigator2_sample/navigation/route_information_parser.dart';
-import 'package:flutter_navigator2_sample/repository/movie_repository.dart';
 
 class CustomApp extends StatefulWidget {
   const CustomApp({Key key}) : super(key: key);
@@ -16,7 +17,7 @@ class _CustomAppState extends State<CustomApp> {
 
   @override
   void initState() {
-    _routerDelegate = CustomRouterDelegate(movieRepository: MovieRepository());
+    _routerDelegate = sl<CustomRouterDelegate>();
     super.initState();
   }
 
@@ -24,9 +25,12 @@ class _CustomAppState extends State<CustomApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerDelegate: _routerDelegate,
-      backButtonDispatcher: RootBackButtonDispatcher(),
+      // backButtonDispatcher: RootBackButtonDispatcher(),
       routeInformationParser: CustomRouteInformationParser(),
-      // routeInformationProvider: ,
+      theme: ThemeData(
+        brightness: Brightness.light
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

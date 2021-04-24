@@ -7,14 +7,14 @@ class CustomRouteInformationParser extends RouteInformationParser<CustomRouteCon
   Future<CustomRouteConfiguration> parseRouteInformation(RouteInformation routeInformation) {
     final uri = Uri.parse(routeInformation.location);
     return Future.value(CustomRouteConfiguration(
-      imdbId: uri.queryParameters['imdbId'],
+      todoId: uri.queryParameters['todoId'] != null ? int.parse(uri.queryParameters['todoId']) : null,
     ));
   }
 
   @override
   RouteInformation restoreRouteInformation(CustomRouteConfiguration configuration) {
-    if (configuration.imdbId != null) {
-      return RouteInformation(location: '/?imdbId=${configuration.imdbId}');
+    if (configuration.todoId != null) {
+      return RouteInformation(location: '/?imdbId=${configuration.todoId}');
     } else {
       return RouteInformation(location: '/');
     }

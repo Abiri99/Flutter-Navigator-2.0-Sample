@@ -1,17 +1,27 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_navigator2_sample/core/model/todo.dart';
 import 'package:flutter_navigator2_sample/core/state_holder.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_bloc.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_event.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_state.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatefulWidget {
-  final List<Map<String, dynamic>> movies;
-  final Function(String imdbID) onMovieItemTap;
+  final List<Todo> todos;
+  final Function(int todoId) onTodoItemTap;
+  final Function(int todoId) onTodoItemUpdateButtonTap;
+  final Function() onFabPressed;
 
-  HomeScreen({@required this.movies, @required this.onMovieItemTap}) : assert(onMovieItemTap != null);
+  HomeScreen({
+    @required this.todos,
+    @required this.onTodoItemTap,
+    @required this.onTodoItemUpdateButtonTap,
+    @required this.onFabPressed,
+  })  : assert(todos != null),
+        assert(onFabPressed != null),
+        assert(onTodoItemTap != null),
+        assert(onTodoItemUpdateButtonTap != null);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -21,21 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   HomeBloc _bloc;
 
   void _dispatchInitialEvents() {
-    _bloc.add(HomeMoviesFetched());
-  }
-
-  void _setSystemOverlayStyle() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    ));
+    _bloc.add(HomeTodosFetched());
   }
 
   @override
   void initState() {
     _bloc = BlocProvider.of<HomeBloc>(context);
     _dispatchInitialEvents();
-    _setSystemOverlayStyle();
     super.initState();
   }
 
@@ -43,27 +45,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movies'),
+        title: Text('Todos',
+            style: GoogleFonts.fredokaOne().copyWith(
+              color: Colors.black,
+            )),
+        backgroundColor: Color(0xffe0e0e0),
+        centerTitle: true,
+        elevation: 1.0,
+        shadowColor: Colors.black26,
+      ),
+      floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
+        onPressed: widget.onFabPressed,
+        child: Icon(
+          Icons.add_rounded,
+          color: Colors.white,
+        ),
       ),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          if (state.movies.status == Status.Completed) {
+          if (state.todos.status == Status.Completed) {
             return ListView.builder(
-              itemCount: state.movies.data.length,
+              itemCount: state.todos.data.length,
               padding: const EdgeInsets.symmetric(
                 vertical: 16.0,
               ),
               physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
-                var item = state.movies.data.elementAt(index);
+                var item = state.todos.data.elementAt(state.todos.data.length - 1 - index);
                 return GestureDetector(
                   onTap: () {
-                    print('item id: ${item['imdbID']}');
-                    widget.onMovieItemTap(item['imdbID']);
+                    print('item id: ${item.title}');
+                    widget.onTodoItemTap(item.id);
                   },
                   child: Container(
-                    height: 100,
+                    height: 68,
                     margin: const EdgeInsets.symmetric(
                       horizontal: 24.0,
                       vertical: 8.0,
@@ -74,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                       boxShadow: [
                         BoxShadow(
                           blurRadius: 12,
@@ -81,55 +98,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           offset: Offset(0, 0),
                         ),
                       ],
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      // borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
                     child: Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          child: CachedNetworkImage(
-                            imageUrl: item['Poster'],
-                            errorWidget: (_, __, ___) {
-                              return Container(
-                                child: Center(
-                                  child: Icon(
-                                    Icons.error,
-                                    color: Colors.black45,
-                                  ),
-                                ),
-                              );
-                            },
-                            fadeInDuration: Duration(milliseconds: 200),
-                            fit: BoxFit.cover,
-                            width: 80,
-                            placeholder: (context, _) {
-                              return Container(
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.black),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                item['Title'],
+                                item.title,
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                 ),
                               ),
-                              Spacer(),
+                              SizedBox(height: 4.0),
                               Text(
-                                item['Year'],
+                                item.description,
                                 style: TextStyle(
                                   color: Colors.black45,
                                   fontSize: 12,
@@ -138,13 +124,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
+                        SizedBox(width: 8.0),
+                        IconButton(
+                          onPressed: () {
+                            widget.onTodoItemUpdateButtonTap(item.id);
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.black,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 );
               },
             );
-          } else if (state.movies.status == Status.Loading) {
+          } else if (state.todos.status == Status.Loading) {
             return Container(
               child: Center(
                 child: CircularProgressIndicator(
@@ -152,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             );
-          } else if (state.movies.status == Status.Empty) {
+          } else if (state.todos.status == Status.Empty) {
             return Center(
               child: Text('Error!'),
             );

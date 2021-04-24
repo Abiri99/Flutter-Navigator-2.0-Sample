@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_navigator2_sample/core/helper/todo_database_helper.dart';
 import 'package:flutter_navigator2_sample/core/state_holder.dart';
-import 'package:flutter_navigator2_sample/repository/movie_repository.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_event.dart';
 import 'package:flutter_navigator2_sample/viewmodel/home/home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final MovieRepository movieRepository;
+  final TodoDatabaseHelper todoDB;
 
-  HomeBloc({@required this.movieRepository, HomeState initialState})
-      : assert(movieRepository != null),
+  HomeBloc({@required this.todoDB, HomeState initialState})
+      : assert(todoDB != null),
         super(initialState);
 
   @override
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
-    if (event is HomeMoviesFetched) {
-      yield* _mapMoviesFetchedToState();
+    if (event is HomeTodosFetched) {
+      yield* _mapTodosFetchedToState();
     }
   }
 
-  Stream<HomeState> _mapMoviesFetchedToState() async* {
+  Stream<HomeState> _mapTodosFetchedToState() async* {
     yield state.copyWith(
-      movies: StateHolder.loading(),
+      todos: StateHolder.loading(),
     );
-    var response = await movieRepository.fetchMovies();
+    var response = await todoDB.todos();
     yield state.copyWith(
-      movies: StateHolder.completed(response),
+      todos: StateHolder.completed(response),
     );
   }
 }
